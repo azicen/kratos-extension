@@ -1,4 +1,4 @@
-module github.com/cypunsource/kratos-extension
+module github.com/azicen/kratos-extension
 
 go 1.21.4
 
