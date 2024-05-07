@@ -1,5 +1,5 @@
 package encoding
 
 import (
-	_ "github.com/cypunsource/kratos-extension/encoding/toml"
+	_ "github.com/azicen/kratos-extension/encoding/toml"
 )
