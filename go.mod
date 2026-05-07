@@ -1,8 +1,8 @@
 module github.com/azicen/kratos-extension
 
-go 1.21.4
+go 1.22
 
 require (
-	github.com/go-kratos/kratos/v2 v2.7.2
-	github.com/pelletier/go-toml/v2 v2.1.1
+	github.com/go-kratos/kratos/v2 v2.9.2
+	github.com/pelletier/go-toml/v2 v2.3.1
 )
