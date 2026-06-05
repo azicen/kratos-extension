@@ -72,10 +72,15 @@ func (h *KratosHandler) Enabled(_ context.Context, level slog.Level) bool {
 
 // Handle 将日志记录转发给 Kratos logger。
 // 记录的消息以键 "msg" 输出。
+// 当 slog.Record 携带有效的 PC 时，自动注入 "caller" 字段，
+// 值为从 module 根目录开始的相对路径。
 // 所有 slog 属性会被展开为键值对，并应用 group 前缀。
 func (h *KratosHandler) Handle(_ context.Context, r slog.Record) error {
-	keyvals := make([]any, 0, 2+len(h.preKeyvals)+r.NumAttrs()*2)
+	keyvals := make([]any, 0, 4+len(h.preKeyvals)+r.NumAttrs()*2)
 	keyvals = append(keyvals, "msg", r.Message)
+	if r.PC != 0 {
+		keyvals = append(keyvals, "caller", callerFromPC(r.PC))
+	}
 	keyvals = append(keyvals, h.preKeyvals...)
 	r.Attrs(func(a slog.Attr) bool {
 		appendAttr(&keyvals, h.groupPrefix, a)
