@@ -1,8 +1,8 @@
 package toml
 
 import (
+	"github.com/go-kratos/kratos/v3/encoding"
 	"github.com/pelletier/go-toml/v2"
-	"github.com/go-kratos/kratos/v2/encoding"
 )
 
 const Name = "toml"
@@ -13,11 +13,11 @@ func init() {
 
 type codec struct{}
 
-func (c codec) Marshal(v interface{}) ([]byte, error) {
+func (c codec) Marshal(v any) ([]byte, error) {
 	return toml.Marshal(v)
 }
 
-func (c codec) Unmarshal(data []byte, v interface{}) error {
+func (c codec) Unmarshal(data []byte, v any) error {
 	return toml.Unmarshal(data, v)
 }
 

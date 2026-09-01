@@ -4,7 +4,15 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/go-kratos/kratos/v3/encoding"
 )
+
+func TestCodec_RegisteredWithKratosV3(t *testing.T) {
+	if got := encoding.GetCodec(Name); got == nil {
+		t.Fatalf("encoding.GetCodec(%q) = nil", Name)
+	}
+}
 
 func TestCodec_Unmarshal(t *testing.T) {
 	tests := []struct {
