@@ -29,28 +29,28 @@ func TestColorHandlerColorsPrimaryFieldsAndSupportsGroups(t *testing.T) {
 	got := output.String()
 	assertFieldColored(t, got, "time", "", ansiGray)
 	assertFieldColored(t, got, "level", "INFO", ansiGreen)
-	assertFieldColored(t, got, "msg", "query completed", ansiGreen)
+	assertFieldColored(t, got, "msg", `"query completed"`, ansiGreen)
 	assertContains(t, got, ansiGray+"service.name=energy-common"+ansiReset)
 	assertContains(t, got, "request.id=req-1")
 	assertContains(t, got, ansiPurple+"request.trace.id=trace-1"+ansiReset)
 	assertFieldColored(t, got, "request.trace_id", "trace-id-1", ansiPurple)
 	assertFieldColored(t, got, "request.span_id", "span-id-1", ansiPurple)
-	assertFieldColored(t, got, "request.sql", "SELECT 1", ansiCyan)
+	assertFieldColored(t, got, "request.sql", `"SELECT 1"`, ansiCyan)
 	assertFieldColored(t, got, "request.elapsed", "12ms", ansiGreen)
 	assertFieldColored(t, got, "request.rows", "1", ansiBlue)
-	assertContains(t, got, ansiRed+"request.error=connection reset"+ansiReset)
+	assertContains(t, got, ansiRed+`request.error="connection reset"`+ansiReset)
 
 	basic := stripANSI(got)
 	for _, want := range []string{
 		"level=INFO",
-		"msg=query completed",
+		`msg="query completed"`,
 		"service.name=energy-common",
 		"request.id=req-1",
 		"request.trace.id=trace-1",
-		"request.sql=SELECT 1",
+		`request.sql="SELECT 1"`,
 		"request.elapsed=12ms",
 		"request.rows=1",
-		"request.error=connection reset",
+		`request.error="connection reset"`,
 	} {
 		assertContains(t, basic, want)
 	}
@@ -72,7 +72,8 @@ func TestColorHandlerHonorsLevelAndAddsSource(t *testing.T) {
 	}
 
 	got := output.String()
-	assertContains(t, got, ansiGreen+"source=/home/azicen/project/rcsz/energy-common/pkg/logging/color_handler_test.go:")
+	assertContains(t, got, ansiGreen+"source=")
+	assertContains(t, got, "color_handler_test.go:")
 	got = stripANSI(got)
 	if !strings.Contains(got, "component=api") {
 		t.Errorf("output %q does not contain record attribute", got)
