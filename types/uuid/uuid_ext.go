@@ -1,30 +1,34 @@
 package uuid
 
 import (
-	jsonv1 "encoding/json"
 	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
+	"encoding/json/v2"
 	"errors"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
-// MarshalJSON 实现 json v1 编码接口。
+var (
+	_ json.Marshaler       = (*UUID)(nil)
+	_ json.Unmarshaler     = (*UUID)(nil)
+	_ json.MarshalerTo     = (*UUID)(nil)
+	_ json.UnmarshalerFrom = (*UUID)(nil)
+)
+
+// MarshalJSON 实现 json/v2 兼容编码接口
 func (x *UUID) MarshalJSON() ([]byte, error) {
 	if len(x.Value) == 0 {
-		return jsonv1.Marshal("")
+		return json.Marshal("")
 	}
-	uid, err := uuid.FromBytes(x.Value)
-	if err != nil {
-		return nil, err
+	if len(x.Value) != len(uuid.UUID{}) {
+		return nil, errors.New("uuid: value must be exactly 16 bytes")
 	}
-	return jsonv1.Marshal(uid.String())
+	return json.Marshal(uuid.UUID(x.Value).String())
 }
 
-// UnmarshalJSON 实现 json v1 解码接口。
+// UnmarshalJSON 实现 json/v2 兼容解码接口
 func (x *UUID) UnmarshalJSON(data []byte) error {
 	var value *string
-	if err := jsonv1.Unmarshal(data, &value); err != nil {
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
 	if value == nil {
@@ -37,27 +41,30 @@ func (x *UUID) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return err
 	}
-	x.Value = uid[:]
+	x.Value = append(x.Value[:0], uid[:]...)
 	return nil
 }
 
-// MarshalJSONV2 实现 json/v2 流式编码接口
-func (x *UUID) MarshalJSONV2(enc *jsontext.Encoder, opts jsonv2.Options) error {
+// MarshalJSONTo 实现 json/v2 流式编码接口
+func (x *UUID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	if len(x.Value) == 0 {
 		return enc.WriteToken(jsontext.String(""))
 	}
-	uid, err := uuid.FromBytes(x.Value)
-	if err != nil {
-		return err // 字节不合法时抛出错误
+	if len(x.Value) != len(uuid.UUID{}) {
+		return errors.New("uuid: value must be exactly 16 bytes")
 	}
+	uid := uuid.UUID(x.Value)
 	return enc.WriteToken(jsontext.String(uid.String()))
 }
 
-// UnmarshalJSONV2 实现 json/v2 流式解码接口
-func (x *UUID) UnmarshalJSONV2(dec *jsontext.Decoder, opts jsonv2.Options) error {
+// UnmarshalJSONFrom 实现 json/v2 流式解码接口
+func (x *UUID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	tok, err := dec.ReadToken()
 	if err != nil {
 		return err
+	}
+	if tok.Kind() != '"' {
+		return errors.New("uuid: JSON value must be a string")
 	}
 	s := tok.String()
 	if s == "" {
@@ -67,22 +74,24 @@ func (x *UUID) UnmarshalJSONV2(dec *jsontext.Decoder, opts jsonv2.Options) error
 	if err != nil {
 		return err
 	}
-	x.Value = uid[:]
+	x.Value = append(x.Value[:0], uid[:]...)
 	return nil
 }
 
 // Unwrap 拆包
 func (x *UUID) Unwrap() uuid.UUID {
 	if x == nil || len(x.Value) == 0 {
-		return uuid.Nil
+		return uuid.Nil()
 	}
-	uid, _ := uuid.FromBytes(x.Value)
-	return uid
+	if len(x.Value) != len(uuid.UUID{}) {
+		return uuid.Nil()
+	}
+	return uuid.UUID(x.Value)
 }
 
 // Wrap 包装
 func Wrap(uid uuid.UUID) *UUID {
 	return &UUID{
-		Value: uid[:],
+		Value: append([]byte(nil), uid[:]...),
 	}
 }

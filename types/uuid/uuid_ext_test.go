@@ -1,14 +1,20 @@
 package uuid
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"testing"
+	"uuid"
+)
 
-	googleuuid "github.com/google/uuid"
+var (
+	_ json.Marshaler       = (*UUID)(nil)
+	_ json.Unmarshaler     = (*UUID)(nil)
+	_ json.MarshalerTo     = (*UUID)(nil)
+	_ json.UnmarshalerFrom = (*UUID)(nil)
 )
 
 func TestUUIDMarshalJSON(t *testing.T) {
-	valid := googleuuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+	valid := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 	tests := []struct {
 		name    string
 		value   *UUID
@@ -24,22 +30,22 @@ func TestUUIDMarshalJSON(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := json.Marshal(tt.value)
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("json.Marshal() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("jsonv2.Marshal() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if !tt.wantErr && string(got) != tt.want {
-				t.Fatalf("json.Marshal() = %s, want %s", got, tt.want)
+				t.Fatalf("jsonv2.Marshal() = %s, want %s", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestUUIDUnmarshalJSON(t *testing.T) {
-	original := googleuuid.MustParse("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
-	want := googleuuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+	original := uuid.MustParse("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+	want := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 	tests := []struct {
 		name     string
 		data     string
-		want     googleuuid.UUID
+		want     uuid.UUID
 		wantErr  bool
 		preserve bool
 	}{
@@ -55,7 +61,7 @@ func TestUUIDUnmarshalJSON(t *testing.T) {
 			target := Wrap(original)
 			err := json.Unmarshal([]byte(tt.data), target)
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("json.Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("jsonv2.Unmarshal() error = %v, wantErr %v", err, tt.wantErr)
 			}
 			if tt.preserve {
 				if got := target.Unwrap(); got != original {
@@ -71,17 +77,47 @@ func TestUUIDUnmarshalJSON(t *testing.T) {
 }
 
 func TestUUIDJSONRoundTrip(t *testing.T) {
-	want := googleuuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+	want := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 	data, err := json.Marshal(Wrap(want))
 	if err != nil {
-		t.Fatalf("json.Marshal() error = %v", err)
+		t.Fatalf("jsonv2.Marshal() error = %v", err)
 	}
 
 	var got UUID
 	if err := json.Unmarshal(data, &got); err != nil {
-		t.Fatalf("json.Unmarshal() error = %v", err)
+		t.Fatalf("jsonv2.Unmarshal() error = %v", err)
 	}
 	if got.Unwrap() != want {
 		t.Fatalf("UUID = %s, want %s", got.Unwrap(), want)
+	}
+}
+
+func TestUUIDJSONV2RoundTrip(t *testing.T) {
+	want := uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+	data, err := json.Marshal(Wrap(want))
+	if err != nil {
+		t.Fatalf("jsonv2.Marshal() error = %v", err)
+	}
+	if got := string(data); got != `"550e8400-e29b-41d4-a716-446655440000"` {
+		t.Fatalf("jsonv2.Marshal() = %s", got)
+	}
+
+	var got UUID
+	if err := json.Unmarshal(data, &got); err != nil {
+		t.Fatalf("jsonv2.Unmarshal() error = %v", err)
+	}
+	if got.Unwrap() != want {
+		t.Fatalf("UUID = %s, want %s", got.Unwrap(), want)
+	}
+}
+
+func TestUUIDUnmarshalJSONV2RejectsNonString(t *testing.T) {
+	for _, data := range []string{"null", "123", "true", `{}`} {
+		t.Run(data, func(t *testing.T) {
+			var got UUID
+			if err := json.Unmarshal([]byte(data), &got); err == nil {
+				t.Fatalf("jsonv2.Unmarshal(%s) error = nil", data)
+			}
+		})
 	}
 }
