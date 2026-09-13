@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"testing"
 	"time"
-	"uuid"
 
 	uuidpb "github.com/azicen/kratos-extension/types/uuid"
 	jsonsonic "github.com/bytedance/sonic"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"

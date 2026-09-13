@@ -3,7 +3,8 @@ package uuid
 import (
 	"database/sql/driver"
 	"testing"
-	"uuid"
+
+	"github.com/google/uuid"
 )
 
 func TestUUIDValue(t *testing.T) {

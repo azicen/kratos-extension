@@ -3,7 +3,8 @@ package uuid
 import (
 	"encoding/json/v2"
 	"testing"
-	"uuid"
+
+	"github.com/google/uuid"
 )
 
 var (

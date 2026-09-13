@@ -10,11 +10,11 @@ import (
 	"sync"
 	"testing"
 	"time"
-	"uuid"
 
 	uuidpb "github.com/azicen/kratos-extension/types/uuid"
 	jsonsonic "github.com/bytedance/sonic"
 	"github.com/go-kratos/kratos/v3/encoding"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"

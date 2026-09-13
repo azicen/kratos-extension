@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"uuid"
 
 	jsonsonic "github.com/bytedance/sonic"
+	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )

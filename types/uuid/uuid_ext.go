@@ -4,7 +4,8 @@ import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"errors"
-	"uuid"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -81,10 +82,10 @@ func (x *UUID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // Unwrap 拆包
 func (x *UUID) Unwrap() uuid.UUID {
 	if x == nil || len(x.Data) == 0 {
-		return uuid.Nil()
+		return uuid.Nil
 	}
 	if len(x.Data) != len(uuid.UUID{}) {
-		return uuid.Nil()
+		return uuid.Nil
 	}
 	return uuid.UUID(x.Data)
 }

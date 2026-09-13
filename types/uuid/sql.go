@@ -5,7 +5,8 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"uuid"
+
+	"github.com/google/uuid"
 )
 
 var (
