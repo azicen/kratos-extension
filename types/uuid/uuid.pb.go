@@ -22,9 +22,10 @@ const (
 )
 
 // UUID 包装类型，底层存储为 16 字节
+// 字段名不可叫 value，否则 Go 结构体字段 Value 会与 driver.Valuer 的 Value() 方法冲突
 type UUID struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Value         []byte                 `protobuf:"bytes,1,opt,name=value,proto3" json:"value,omitempty"`
+	Data          []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -59,9 +60,9 @@ func (*UUID) Descriptor() ([]byte, []int) {
 	return file_types_uuid_uuid_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *UUID) GetValue() []byte {
+func (x *UUID) GetData() []byte {
 	if x != nil {
-		return x.Value
+		return x.Data
 	}
 	return nil
 }
@@ -70,9 +71,9 @@ var File_types_uuid_uuid_proto protoreflect.FileDescriptor
 
 const file_types_uuid_uuid_proto_rawDesc = "" +
 	"\n" +
-	"\x15types/uuid/uuid.proto\x12\x04uuid\"\x1c\n" +
-	"\x04UUID\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\fR\x05valueB4Z2github.com/azicen/kratos-extension/types/uuid;uuidb\x06proto3"
+	"\x15types/uuid/uuid.proto\x12\x04uuid\"\x1a\n" +
+	"\x04UUID\x12\x12\n" +
+	"\x04data\x18\x01 \x01(\fR\x04dataB4Z2github.com/azicen/kratos-extension/types/uuid;uuidb\x06proto3"
 
 var (
 	file_types_uuid_uuid_proto_rawDescOnce sync.Once

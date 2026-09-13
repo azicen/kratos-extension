@@ -2,10 +2,7 @@ syntax = "proto3";
 
 package uuid;
 
-// 这是该扩展库对外的真实 module 路径
 option go_package = "github.com/azicen/kratos-extension/types/uuid;uuid";
 
 // UUID 包装类型，底层存储为 16 字节
-message UUID {
-  bytes value = 1;
-}
+message UUID { bytes data = 1; }

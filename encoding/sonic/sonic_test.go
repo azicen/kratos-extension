@@ -996,5 +996,5 @@ func setField(message *dynamicpb.Message, name protoreflect.Name, value protoref
 }
 
 func uuidValueField() protoreflect.FieldDescriptor {
-	return uuidpb.File_types_uuid_uuid_proto.Messages().ByName("UUID").Fields().ByName("value")
+	return uuidpb.File_types_uuid_uuid_proto.Messages().ByName("UUID").Fields().ByName("data")
 }

@@ -23,7 +23,7 @@ func TestUUIDMarshalJSON(t *testing.T) {
 	}{
 		{name: "empty", value: &UUID{}, want: `""`},
 		{name: "valid", value: Wrap(valid), want: `"550e8400-e29b-41d4-a716-446655440000"`},
-		{name: "invalid bytes", value: &UUID{Value: []byte{1}}, wantErr: true},
+		{name: "invalid bytes", value: &UUID{Data: []byte{1}}, wantErr: true},
 	}
 
 	for _, tt := range tests {
